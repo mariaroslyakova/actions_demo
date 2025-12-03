@@ -1,0 +1,39 @@
+name: Nightly Regression Tests
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Запускать ежедневно в 2:00 UTC
+  workflow_dispatch:  # Позволяет запускать вручную
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    
+    - name: Run comprehensive tests
+      run: |
+        cd tests
+        python -m pytest test_taskclass.py -v --tb=short
+      env:
+        PYTHONPATH: src
+    
+    - name: Generate test report
+      run: |
+        cd tests
+        python -m pytest test_taskclass.py --junitxml=test-results.xml
+      env:
+        PYTHONPATH: src
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results
+        path: tests/test-results.xml
