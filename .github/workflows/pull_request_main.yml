@@ -3,6 +3,8 @@ name: Lint code
 on:
   pull_request:
     branches: ["main"]
+  push:
+    branches: ["main"]
 
 jobs:
   flake8-lint:
